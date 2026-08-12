@@ -1,0 +1,17 @@
+{
+  "run_id": "fixture-suite",
+  "case_id": "fixture-empty-evidence",
+  "attempt": 1,
+  "artifact_type": "code",
+  "dimensions": [
+    {"name": "functional_correctness", "score": 30, "max_score": 30, "evidence": [], "gaps": []},
+    {"name": "architecture_maintainability", "score": 20, "max_score": 20, "evidence": [], "gaps": []},
+    {"name": "tests_verification", "score": 20, "max_score": 20, "evidence": [], "gaps": []},
+    {"name": "robustness_security", "score": 15, "max_score": 15, "evidence": [], "gaps": []},
+    {"name": "readability_naming", "score": 10, "max_score": 10, "evidence": [], "gaps": []},
+    {"name": "scope_control", "score": 5, "max_score": 5, "evidence": [], "gaps": []}
+  ],
+  "blockers": [],
+  "total": 100,
+  "decision": "pass"
+}

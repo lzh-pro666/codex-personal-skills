@@ -35,11 +35,28 @@ $developer-notes 把刚才验证完成的工作整理成开发笔记。
 
 ## 维护
 
-仓库只保留运行 Skill 所需的 `SKILL.md`、按需加载的 references、确定性功能脚本
-和 UI 元数据。一次性的评测案例、fixture、盲评结果与构建缓存不进入源码仓库。
+仓库保留运行 Skill 所需的 `SKILL.md`、按需加载的 references、确定性功能脚本、
+UI 元数据，以及后续优化 Skill 可复用的评估源码：
+
+```text
+evals/
+├── cases/      # 行为、生成和真实项目案例定义
+├── fixtures/   # 可重复执行的最小测试输入
+└── scripts/    # 准备、验证、聚合和安全门禁脚本
+```
+
+运行产生的 `evals/.runs/`、Swift `.build/`、日志、渲染文件、盲评结果和临时
+worktree 不进入 Git；它们可以删除并由评估脚本重新生成。
 
 修改 Skill 后，使用 Codex 自带的 `skill-creator` 校验其目录结构，并针对实际改动
-执行最小的真实场景验证。涉及项目代码时，在独立分支或 worktree 中执行项目自身
-的测试和构建，不把通用测试夹具长期复制到本仓库。
+先运行基础静态门禁：
+
+```bash
+python3 evals/scripts/run_static_checks.py
+```
+
+需要高强度回归时，再使用 `run_behavior_eval.py`、`run_generative_eval.py` 和
+`validate_real_project_report.py`。涉及项目代码时，在独立分支或 worktree 中执行
+项目自身的测试和构建，并只把可复用案例定义留在本仓库。
 
 不要在仓库中保存 API Key、Token、证书、私钥、`.env` 或 `~/.codex/config.toml`。
