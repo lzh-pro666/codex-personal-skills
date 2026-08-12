@@ -33,38 +33,13 @@ $developer-notes 把刚才验证完成的工作整理成开发笔记。
 
 复杂需求优先显式调用 Superpowers 的 `$brainstorming`；不要为了启停插件中断当前任务。若当前任务尚未加载该能力，直接使用 `development-workflow` 的需求对齐步骤继续工作。代码、测试、PR 和已接受的 OpenSpec 是事实来源，Obsidian 是可复用知识层，Notion 是单 PR 复盘层。
 
-## 验证
+## 维护
 
-```bash
-python3 evals/scripts/run_static_checks.py
-python3 evals/scripts/validate_scorecard.py --suite \
-  evals/fixtures/pass-code.json \
-  evals/fixtures/pass-note.json \
-  evals/fixtures/pass-workflow.json
-```
+仓库只保留运行 Skill 所需的 `SKILL.md`、按需加载的 references、确定性功能脚本
+和 UI 元数据。一次性的评测案例、fixture、盲评结果与构建缓存不进入源码仓库。
 
-最终图表门禁还要用固定版本的官方 Mermaid CLI 真正渲染每个 Mermaid 块，而不只做文本检查：
-
-```bash
-python3 evals/scripts/run_generative_eval.py verify <run-id> \
-  --mermaid-cli /path/to/node_modules/.bin/mmdc
-```
-
-除独立 Swift fixture 外，`evals/cases/real-project-cases.jsonl` 还定义了两个
-`siuper-ios` 真实回归案例。它们必须从项目当前已提交 HEAD 创建独立
-`codex/skill-eval-*` 分支与 worktree，记录 red-green-regression 证据，并用：
-
-```bash
-python3 evals/scripts/validate_real_project_report.py \
-  evals/.runs/<run-id>/real-project-report.jsonl \
-  --source-worktree "/path/to/siuper-ios" \
-  --worktree "siuper-ios-lru-capacity=/path/to/lru-worktree" \
-  --worktree "siuper-ios-retry-fractional-delay=/path/to/retry-worktree"
-```
-
-以 live 模式直接核对来源工作区指纹、worktree 来源、分支/基准提交、实际变更
-文件与 `git diff --check`，并校验已记录命令证据和质量阈值。命令结果仍是评测
-运行留下的证据，不应把结构校验冒充重新执行测试；发布结论前要保留并人工抽查
-原始日志。评测分支不自动提交、推送或合并，避免影响正在开发的分支。
+修改 Skill 后，使用 Codex 自带的 `skill-creator` 校验其目录结构，并针对实际改动
+执行最小的真实场景验证。涉及项目代码时，在独立分支或 worktree 中执行项目自身
+的测试和构建，不把通用测试夹具长期复制到本仓库。
 
 不要在仓库中保存 API Key、Token、证书、私钥、`.env` 或 `~/.codex/config.toml`。

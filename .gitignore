@@ -14,7 +14,6 @@
 *.log
 .codex-artifacts/
 ai-output/
-evals/.runs/
 __pycache__/
 *.py[cod]
 .pytest_cache/
