@@ -1,0 +1,17 @@
+{
+  "run_id": "fixture-suite",
+  "case_id": "fixture-invalid-pass",
+  "attempt": 1,
+  "artifact_type": "note",
+  "dimensions": [
+    {"name": "understandability", "score": 22, "max_score": 25, "evidence": ["Readable prose"], "gaps": []},
+    {"name": "completeness", "score": 22, "max_score": 25, "evidence": ["Most sections exist"], "gaps": ["Required async failure path is absent"]},
+    {"name": "correctness_evidence", "score": 17, "max_score": 20, "evidence": ["One test is cited"], "gaps": []},
+    {"name": "searchability_traceability", "score": 9, "max_score": 10, "evidence": ["Specific title"], "gaps": []},
+    {"name": "structure_concision", "score": 9, "max_score": 10, "evidence": ["No empty heading"], "gaps": []},
+    {"name": "diagrams_examples", "score": 8, "max_score": 10, "evidence": ["Code example is present"], "gaps": ["Required sequence diagram is missing"]}
+  ],
+  "blockers": ["Async lifecycle trigger requires a sequence diagram or equivalent explanation"],
+  "total": 87,
+  "decision": "pass"
+}

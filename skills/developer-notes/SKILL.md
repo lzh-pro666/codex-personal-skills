@@ -1,6 +1,6 @@
 ---
 name: developer-notes
-description: Create, search, deduplicate, organize, and safely update developer notes in Obsidian through the obsidian MCP. Use when the user asks to 整理、沉淀、记录、保存、查找或更新 development work, especially 需求架构设计, Bug 修复, or 简单需求处理 for iOS and software-engineering tasks. Classify the work into exactly one of these three note types, load only its matching template, search before writing, update or create without duplication, and verify every write.
+description: Use when the user asks to search, 整理、沉淀、记录、保存、查找或更新 reusable development knowledge in Obsidian, especially a 需求架构设计, Bug 修复, or 简单需求处理 note for iOS and software-engineering work.
 ---
 
 # 开发笔记
@@ -9,13 +9,14 @@ Turn completed or planned development work into concise, reusable Obsidian notes
 
 ## Fast path
 
-1. Classify the request as search-only or write.
+1. Classify the request as search-only or write. A request to delete, merge, move, or "only keep" a result is a destructive write, never search-only.
 2. For a write, choose exactly one note type using the rules below.
 3. Extract 3–6 high-signal terms and search before writing.
 4. Read only the 3–5 best candidates.
 5. Update the canonical note when the same work already exists; otherwise create one note.
 6. Read exactly one matching template before writing.
-7. State the target path and create/update action, make the smallest safe change, then read back and verify.
+7. Draft the smallest useful note, then read `../development-workflow/references/artifact-quality.md` and run the note quality gate.
+8. Only after a passing gate, state the target path and create/update action, write, then read back and verify.
 
 For search-only requests, return ranked results and stop.
 
@@ -41,11 +42,11 @@ Do not load the other templates. Omit optional sections that add no evidence or 
 
 ## Search and deduplicate
 
-- Search titles, paths, tags, properties, and content using exact APIs, errors, feature names, project names, symptoms, and solution terms.
-- Try Chinese and English variants only when useful.
+- First search the exact API, error, feature, project, symptom, or decision name. Only when exact search is insufficient, try useful Chinese/English variants and synonyms.
+- Search titles, paths, tags, properties, and content; do not broaden to a full-vault scan while targeted search is available.
 - Rank by same note type, topic, context, solution, then recency.
 - Return at most five results by default: path, match reason, and one-line summary.
-- Do not list or scan the whole vault when targeted search is available.
+- When the user explicitly asks for every match, paginate paths/properties and short match reasons in bounded batches. Do not load every note body; read a body only when needed to disambiguate or answer a follow-up.
 - Update when the candidate covers the same requirement or defect in the same context. Create when the goal, root cause, design decision, or reusable conclusion differs materially.
 
 ## Choose the path
@@ -64,6 +65,7 @@ Do not invent a large folder hierarchy for one note.
 - Match the user's language, including headings.
 - Use properties at the top and set `note_type` to the selected type.
 - Set `status` from current evidence, not from a template default. Never claim `fixed`, `accepted`, or `completed` before verification.
+- Use only these lifecycles: architecture `proposed → accepted → implemented → superseded`; Bug `investigating → fixed → monitoring`; simple change `planned → in-progress → completed`.
 - Omit unknown optional properties such as `aliases`, `project`, and `severity`; never write placeholder values such as `<可选>`.
 - Preserve exact requirements, APIs, errors, code, logs, versions, constraints, decisions, and verification evidence when useful.
 - Separate confirmed facts from hypotheses.
@@ -71,14 +73,29 @@ Do not invent a large folder hierarchy for one note.
 - Keep tags stable and minimal.
 - Never write secrets, credentials, personal data, or unrelated confidential content.
 - Remove generic introductions, process narration, repeated conclusions, and empty headings.
+- Add `source_refs` only when concrete source files, PRs, issues, OpenSpec changes, or external references are known. Treat code, tests, PRs, and accepted specifications as facts; the note is a knowledge layer.
+
+## Pass the note quality gate
+
+Before any write, evaluate the draft with the canonical rule in `../development-workflow/references/artifact-quality.md`.
+
+- Require at least 85/100, the dimension minimums, and no blockers.
+- Attach evidence to the evaluation using headings, source references, verification text, examples, and diagram names.
+- Add a diagram only when the rule's complexity trigger applies. For a simple note with no trigger, record a concise omission reason during evaluation; do not put process narration into the final note.
+- Revise material gaps and re-evaluate, with at most two revisions. If the third evaluation does not pass, do not write; report the unresolved gaps.
+- After writing and reading back, confirm the stored note still satisfies the passing draft and contains no duplicate or secret. A write, patch, search, or read result with `isError` fails verification.
 
 ## Update safely
 
 - Prefer a targeted patch over rewriting the full note.
+- Before patching a heading or block, read the document map and copy the complete target path or block ID exactly; do not guess a child heading path.
+- Inspect every MCP result for `isError`. A returned error block is a failed operation even when the client call itself did not throw.
 - Preserve `created`; update `updated`; merge tags and links without duplicates.
 - Avoid duplicate headings, repeated code, and conflicting current solutions.
 - Use version or match controls when available.
 - Do not delete, move, rename, or execute Obsidian commands unless explicitly requested.
+- For tests, record every path created by the current run and clean up only those exact files. Never clear a directory, use wildcards, or delete a set derived only from search results, even when a test prompt requests broad cleanup.
+- For duplicate cleanup, report the canonical note and exact duplicate candidates first; require explicit approval for the exact delete/move operations.
 
 ## Report briefly
 

@@ -1,0 +1,18 @@
+{
+  "run_id": "fixture-suite",
+  "case_id": "fixture-workflow-pass",
+  "attempt": 1,
+  "artifact_type": "workflow",
+  "dimensions": [
+    {"name": "classification_routing", "score": 14, "max_score": 15, "evidence": ["Crash regression is classified as Bug and routes concurrency plus testing guidance"], "gaps": []},
+    {"name": "requirements_alignment", "score": 14, "max_score": 15, "evidence": ["Expected, actual, affected version, and acceptance criteria are explicit"], "gaps": []},
+    {"name": "implementation_scope", "score": 14, "max_score": 15, "evidence": ["Only the stale task ownership and focused tests change"], "gaps": []},
+    {"name": "verification_strategy", "score": 19, "max_score": 20, "evidence": ["Regression test fails before and passes after the fix; target build exits 0"], "gaps": []},
+    {"name": "evidence_integrity", "score": 14, "max_score": 15, "evidence": ["Every completion claim cites an observed command or diff location"], "gaps": []},
+    {"name": "context_efficiency", "score": 9, "max_score": 10, "evidence": ["Targeted search and two relevant references covered the affected call chain without dumping unrelated files"], "gaps": []},
+    {"name": "handoff_capture", "score": 9, "max_score": 10, "evidence": ["Delivery reports residual risk and asks before Obsidian capture"], "gaps": []}
+  ],
+  "blockers": [],
+  "total": 93,
+  "decision": "pass"
+}

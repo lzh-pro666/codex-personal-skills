@@ -1,0 +1,4 @@
+interface:
+  display_name: "PR Review to Notion"
+  short_description: "Create a validated Chinese PR retrospective"
+  default_prompt: "Use $pr-review-to-notion to analyze one GitHub PR URL and prepare a validated Chinese retrospective; write to Notion only when the user explicitly requests it and all checks pass."
