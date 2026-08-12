@@ -1,0 +1,17 @@
+{
+  "run_id": "fixture-suite",
+  "case_id": "fixture-code-pass",
+  "attempt": 1,
+  "artifact_type": "code",
+  "dimensions": [
+    {"name": "functional_correctness", "score": 27, "max_score": 30, "evidence": ["Tests/ParserTests.swift:42 covers the accepted malformed-input behavior"], "gaps": []},
+    {"name": "architecture_maintainability", "score": 18, "max_score": 20, "evidence": ["Sources/Parser.swift:18 keeps decoding behind the existing Parser protocol"], "gaps": []},
+    {"name": "tests_verification", "score": 18, "max_score": 20, "evidence": ["swift test --filter ParserTests exited 0 with 8 tests"], "gaps": []},
+    {"name": "robustness_security", "score": 14, "max_score": 15, "evidence": ["Tests/ParserTests.swift:61 covers empty, oversized, and invalid input"], "gaps": []},
+    {"name": "readability_naming", "score": 9, "max_score": 10, "evidence": ["ParserError cases describe each observable failure"], "gaps": []},
+    {"name": "scope_control", "score": 5, "max_score": 5, "evidence": ["Diff changes the parser and its focused tests only"], "gaps": []}
+  ],
+  "blockers": [],
+  "total": 91,
+  "decision": "pass"
+}

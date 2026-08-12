@@ -1,0 +1,4 @@
+interface:
+  display_name: "iOS Accessibility"
+  short_description: "实现和审查 UIKit、SwiftUI 无障碍体验"
+  default_prompt: "Use $ios-accessibility to implement or review accessibility for this affected iOS user flow and report automated versus manual verification."

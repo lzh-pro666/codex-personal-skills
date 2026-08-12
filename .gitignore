@@ -12,6 +12,9 @@
 !.env.example
 *.local
 *.log
+.codex-artifacts/
+ai-output/
+evals/.runs/
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -30,7 +33,9 @@ credentials/
 .codex/
 config.toml
 config.local.toml
+skills/pr-review-to-notion/config/notion.local.json
 
 # Build output
 build/
+.build/
 dist/

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Swift Concurrency"
+  short_description: "诊断 actor、Sendable、Task、取消与数据竞争问题"
+  default_prompt: "Use $swift-concurrency to diagnose this concurrency issue, preserve target compatibility, and verify the smallest correct fix."

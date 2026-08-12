@@ -1,0 +1,4 @@
+interface:
+  display_name: "SwiftUI UIKit Interop"
+  short_description: "实现和诊断 SwiftUI 与 UIKit 的生命周期及状态边界"
+  default_prompt: "Use $swiftui-uikit-interop to make ownership, lifecycle, layout, state synchronization, and cleanup explicit across this framework boundary."

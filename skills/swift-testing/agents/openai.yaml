@@ -1,0 +1,4 @@
+interface:
+  display_name: "Swift Testing"
+  short_description: "编写确定性的 Swift Testing 或 XCTest 行为测试"
+  default_prompt: "Use $swift-testing to write focused deterministic tests that match this target's framework and toolchain."
