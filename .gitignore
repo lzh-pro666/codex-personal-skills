@@ -1,0 +1,36 @@
+# macOS and editors
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Local environments and caches
+.env
+.env.*
+!.env.example
+*.local
+*.log
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+
+# Credentials and cryptographic material
+secrets/
+credentials/
+*.key
+*.pem
+*.p12
+*.pfx
+*.mobileprovision
+
+# Machine-specific Codex configuration
+.codex/
+config.toml
+config.local.toml
+
+# Build output
+build/
+dist/

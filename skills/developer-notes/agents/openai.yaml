@@ -1,0 +1,15 @@
+interface:
+  display_name: "开发笔记"
+  short_description: "分类、查重并安全整理 Obsidian 开发笔记工作流"
+  default_prompt: "Use $developer-notes to classify this work and create or update the right Obsidian development note."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "obsidian"
+      description: "Obsidian Local REST API with MCP"
+      transport: "streamable_http"
+      url: "http://127.0.0.1:27123/mcp/"
+
+policy:
+  allow_implicit_invocation: true
