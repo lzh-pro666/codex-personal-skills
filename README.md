@@ -31,7 +31,7 @@ $development-workflow 实现这个需求并完成质量验收。
 $developer-notes 把刚才验证完成的工作整理成开发笔记。
 ```
 
-复杂需求优先显式调用 Superpowers 的 `$brainstorming`；不要为了启停插件中断当前任务。若当前任务尚未加载该能力，直接使用 `development-workflow` 的需求对齐步骤继续工作。代码、测试、PR 和已接受的 OpenSpec 是事实来源，Obsidian 是可复用知识层，Notion 是单 PR 复盘层。
+`development-workflow` 是 Codex 的个人策略与路由层，不复制 Superpowers 本体。需求确实存在重大歧义时才调用 `$brainstorming`；精确任务和已批准规格直接执行。不要为启停 Skill 中断任务或重启 Codex，也不要并装两套同名 Superpowers Skill。代码、测试、PR 和已接受的 OpenSpec 是事实来源，Obsidian 是可复用知识层，Notion 是单 PR 复盘层。
 
 ## 维护
 
