@@ -5,64 +5,47 @@ description: Use when a software request involves requirements or architecture d
 
 # Development Workflow
 
-Deliver verified code with the smallest justified process. Treat repository code, tests, accepted specifications, and executed verification as facts; treat notes as a reusable knowledge layer, not as implementation authority.
+Deliver verified outcomes with the smallest justified process. This is a Codex policy overlay and specialist router, not a copy of Superpowers: load another workflow only when its own trigger matches. Repository code, tests, accepted specifications, and observed verification are facts; notes are a reusable knowledge layer.
 
-## Route the work
+## Route and authority
 
-Choose the execution mode from the user's requested outcome before editing:
+Choose the requested outcome before mutation:
 
-1. **Design-only**: Analyze requirements, constraints, alternatives, trade-offs, and acceptance criteria; deliver a design without implementing it. If the user explicitly asks to save a design artifact, write only that artifact.
-2. **Diagnose-only**: Reproduce or inspect the symptom, determine the root cause and evidence, and report findings without applying a fix.
-3. **Review-only**: Inspect the requested diff or artifact and report actionable findings without editing files, posting comments, or changing repository/external state.
-4. **Code change**: The user explicitly asks to implement, fix, refactor, or otherwise modify code or configuration. Classify this mode into exactly one change type:
-   - **Complex requirement or architecture change**: Cross-module behavior, new API/data model, migration, compatibility strategy, material trade-offs, or unclear acceptance criteria.
-   - **Bug fix**: Incorrect behavior, crash, regression, failed test, performance defect, race, incident, or compatibility failure.
-   - **Simple change**: Contained and low-risk work with clear acceptance criteria and no architectural decision.
+- **Design-only**: deliver requirements, alternatives, trade-offs, and acceptance; write only a requested design artifact.
+- **Diagnose-only**: reproduce or inspect, confirm or bound the cause, and report without fixing.
+- **Review-only**: report actionable findings without editing, posting comments, or changing external state.
+- **Code change**: implementation is explicitly requested. Classify it as **complex/architecture**, **bug fix**, or **simple change**.
 
-Read-only wording such as “inspect,” “explain,” “diagnose,” “review,” or “do not modify” is a hard mutation boundary. For these requests, use read-only inspection and non-mutating diagnostics; do not implement, edit tracked/configuration files, create branches, stage, commit, push, post comments, or publish notes. If proof requires mutation, report that limitation and request authorization. Permission to save a design artifact does not authorize code changes.
+Read-only wording such as “inspect,” “explain,” “diagnose,” “review,” or “do not modify” is a hard mutation boundary. Do not edit tracked/configuration files, create branches, stage, commit, push, publish notes, or implement a fix. If proof requires mutation, report the limitation and request authority.
 
-A requested code change remains one of the three change types: a bug remains a bug even when its fix affects architecture, and a simple change escalates only when investigation reveals a material design decision.
+Independently mark work **high-risk** when it is security-sensitive, destructive, production-data or migration work, a public-contract change, cross-system coordination, or consequential external state.
 
-## Align requirements
+## Align only what matters
 
-- For a complex requirement, explicitly use Superpowers `$brainstorming` when it is available in the current task. Never interrupt an active task or require a Codex restart merely to load it. If unavailable, perform the same focused requirements-alignment questions in this workflow; do not create a second alignment Skill.
-- Record goal, non-goals, users, constraints, alternatives, trade-offs, failure behavior, migration, and observable acceptance criteria.
-- When the repository contains `openspec/` or its instructions require OpenSpec, treat the accepted OpenSpec change as authoritative. Link any Superpowers artifact to the OpenSpec `change-id`. If they conflict, stop and correct OpenSpec before implementation.
-- For a bug, capture the shortest reproduction, expected/actual behavior, affected versions, evidence, and a root-cause hypothesis before editing.
-- For a simple change, state the intended behavior, affected surface, explicit non-goals, and minimum verification. Do not create design ceremony with no decision value.
+- For an ambiguous complex requirement, use `$brainstorming` only when its trigger independently matches and it is already available. Skip precise tasks and accepted specifications. Never interrupt work or restart Codex to load a Skill; otherwise ask only questions whose answers change scope or architecture.
+- Record relevant goals, non-goals, constraints, trade-offs, failure behavior, migration, and observable acceptance. When required, accepted OpenSpec is authoritative; link its `change-id` and stop on a conflict before implementation.
+- For a bug, capture the shortest reproduction, expected/actual behavior, evidence, and a falsifiable root-cause hypothesis. Use `$systematic-debugging` only when the cause is unclear, intermittent, disputed, or previously misdiagnosed.
+- For a simple change, state intended behavior, affected surface, non-goals, and minimum verification. Do not create ceremony without decision value.
 
-## Inspect and implement
+## Implement scoped changes
 
-Enter this section only for **Code change** mode. Design-only, diagnose-only, and review-only stop after delivering the requested analysis, evidence, design, or findings.
+Enter this section only for **Code change** mode.
 
-1. Read repository instructions, inspect the complete affected path, and run a read-only worktree status check before changing code.
-   - Never write, stage, or commit a credential. Replace it with an ignored local configuration, environment variable, or approved credential store before any implementation step.
-   - Treat every pre-existing modification as user-owned. If the worktree is dirty, use a separate worktree for broad integration or any change that could overlap; for a small non-overlapping edit, preserve the existing changes and explicitly verify no overlap. Never reset or overwrite them.
-2. Load only relevant specialist Skills:
-   - Swift actor isolation, tasks, cancellation, or races: `$swift-concurrency`
-   - Unit tests or framework migration: `$swift-testing`
+1. Read repository instructions, inspect the affected path, and check worktree status. Never store credentials. Treat existing modifications as user-owned; use an isolated worktree when requested or when overlap, duration, concurrency, or risk materially warrants it. Never reset or overwrite user work.
+2. Load only matching specialist Skills:
+   - actor isolation, tasks, cancellation, races: `$swift-concurrency`
+   - Swift tests or framework migration: `$swift-testing`
    - SwiftUI/UIKit boundaries: `$swiftui-uikit-interop`
-   - Assistive technologies or accessible UI: `$ios-accessibility`
-   - Use targeted search before broad listing, read the affected call chain rather than unrelated directories, and load only the reference files needed for the current decision. Bound logs, diffs, search results, and external evidence; keep a source pointer when summarizing material that may be needed later.
-   - Preserve accepted goals, non-goals, constraints, unresolved questions, and verification evidence across long tasks or context compaction. Re-check the authoritative source instead of relying on a lossy summary when a decision depends on exact wording.
-3. Keep the patch scoped to the accepted behavior. Preserve compatibility and local conventions unless the specification explicitly changes them.
-   - Defend untrusted boundaries and observed failure paths: user/network input, decoding, persistence, concurrency, permissions, and security-sensitive operations.
-   - Do not add speculative guards for states already made impossible by types or established invariants. Never hide a programmer error behind an empty result, silent return, or broad fallback; enforce or document the invariant instead.
-   - Extract a helper only when it provides meaningful reuse, names a non-obvious rule, isolates a side effect, reduces real branching, or creates a useful test seam. Avoid one-line pass-through helpers, single-use wrappers, and layers that merely rename an existing API.
-4. At every testable boundary—models, view models, services, business rules, parsers, state machines, and regressions—first demonstrate a failing test, then make it pass, then run focused regression tests.
-5. For pure layout, configuration, generated code, or behavior that cannot reasonably be unit-tested, use targeted builds and concrete manual acceptance steps. Record why an automated test was not suitable.
+   - assistive technologies and accessible UI: `$ios-accessibility`
+3. Search narrowly, inspect the affected call chain, bound logs and diffs, and load only references needed for the current decision. Preserve accepted constraints and evidence across compaction; re-read the authoritative source when exact wording matters.
+4. State a brief outcome-oriented plan and acceptance for non-mechanical work. Use `$writing-plans` only when requested, required by high risk, or needed for resumable dependency coordination. A plan never grants implementation authority.
+5. Keep the patch minimal and compatible. Defend untrusted boundaries and observed failures, but do not add speculative guards for impossible states or hide programmer errors behind silent fallbacks. Extract helpers only for meaningful reuse, non-obvious rules, side effects, real branching, or test seams; avoid pass-through wrappers and needless single-use helpers.
+6. Use `$test-driven-development` when requested or required, or when a cheap focused red test disambiguates implementation or captures a confirmed regression. An accurate existing failure may be red. Do not force it for behavior-preserving refactors, documentation, configuration-only work, generated code, prototypes, pure layout, or impractical unit-test boundaries; use targeted builds and concrete manual acceptance instead.
 
-## Verify and evaluate
+## Verify, evaluate, and finish
 
-- Run the narrowest relevant tests/builds first, then the repository-required checks.
-- Do not claim a command passed unless it was executed in the current worktree and its result was observed.
-- After verification, read `references/artifact-quality.md` and evaluate the generated code with an evidence-backed scorecard.
-- Evaluate context control with observable evidence: relevant files/references loaded, bounded searches or selectors used, critical constraints retained, and irrelevant raw output excluded. Do not reward shallow inspection merely because it used fewer tokens.
-- If the decision is `revise`, address every material gap and re-evaluate. Allow at most two revisions (three total evaluations).
-- If the third evaluation does not pass, do not claim completion. Report the remaining blockers and preserve the last safe state.
-
-## Finish and capture knowledge
-
-Report outcome, verification evidence, quality decision, risks, and unverified boundaries. After a passing implementation, proactively ask whether the user wants an Obsidian development note. Do not write one automatically.
-
-When requested, invoke `$developer-notes` with the verified facts, source references, quality evidence, and final status. For a PR-focused personal retrospective, use `$pr-review-to-notion`; do not duplicate its full body in Obsidian.
+- Run the narrowest relevant checks before repository-required checks. Reuse fresh evidence while inputs are unchanged; later mutation invalidates only affected evidence. Never claim an unobserved pass.
+- Use `$verification-before-completion` for high-risk, disputed, or multiple independent material claims; routine command count alone does not trigger it.
+- After a code change, read `references/artifact-quality.md` and produce its evidence-backed scorecard. Include context-control evidence: relevant sources loaded, bounded searches, retained constraints, and excluded irrelevant output. Do not score nonexistent generated code for design-, diagnose-, or review-only work.
+- On `revise`, address material gaps and re-evaluate, with at most two revisions. After a third non-pass, report blockers and preserve the last safe state; do not claim completion.
+- Report outcome, verification, quality decision, risks, and unverified boundaries. After a passing implementation, ask whether to create an Obsidian development note; never write one automatically. When requested, use `$developer-notes` with verified facts. Use `$pr-review-to-notion` for a single-PR retrospective rather than duplicating it in Obsidian.
