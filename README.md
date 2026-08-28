@@ -31,7 +31,7 @@ $development-workflow 实现这个需求并完成质量验收。
 $developer-notes 把刚才验证完成的工作整理成开发笔记。
 ```
 
-`development-workflow` 是 Codex 的个人策略与路由层，不复制 Superpowers 本体。需求确实存在重大歧义时才调用 `$brainstorming`；精确任务和已批准规格直接执行。不要为启停 Skill 中断任务或重启 Codex，也不要并装两套同名 Superpowers Skill。代码、测试、PR 和已接受的 OpenSpec 是事实来源，Obsidian 是可复用知识层，Notion 是单 PR 复盘层。
+`development-workflow` 内置轻量需求确认：修改前先说明目标、范围、验收条件和关键假设；已经清楚时直接继续，只在答案会改变行为、架构或权限时询问。测试用于验证可测行为和回归风险，不强制先写失败测试再改代码。代码、测试、PR 和已接受的 OpenSpec 是事实来源，Obsidian 是可复用知识层，Notion 是单 PR 复盘层。
 
 ## 维护
 
@@ -57,6 +57,6 @@ python3 evals/scripts/run_static_checks.py
 
 需要高强度回归时，再使用 `run_behavior_eval.py`、`run_generative_eval.py` 和
 `validate_real_project_report.py`。涉及项目代码时，在独立分支或 worktree 中执行
-项目自身的测试和构建，并只把可复用案例定义留在本仓库。
+项目自身的聚焦测试和静态检查；仅在用户明确要求时运行构建。只把可复用案例定义留在本仓库。
 
 不要在仓库中保存 API Key、Token、证书、私钥、`.env` 或 `~/.codex/config.toml`。

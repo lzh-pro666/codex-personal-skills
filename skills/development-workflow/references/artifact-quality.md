@@ -94,7 +94,7 @@ Simple changes and simple bugs do not require a diagram by default. When none of
 | `classification_routing` | Correct task class and specialist Skill routing | 15 | 12 |
 | `requirements_alignment` | Goals, boundaries, constraints, and acceptance criteria | 15 | 12 |
 | `implementation_scope` | Safe, minimal, specification-aligned execution | 15 | 0 |
-| `verification_strategy` | Proportionate test/build/manual verification | 20 | 16 |
+| `verification_strategy` | Proportionate test/static/manual verification; build only when explicitly requested | 20 | 16 |
 | `evidence_integrity` | Facts and claims are traceable and honest | 15 | 12 |
 | `context_efficiency` | Complete relevant context with bounded loading, durable constraints, and low noise | 10 | 8 |
 | `handoff_capture` | Clear delivery, remaining risks, and optional note handoff | 10 | 0 |
