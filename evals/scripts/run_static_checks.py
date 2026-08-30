@@ -16,17 +16,19 @@ SKILLS = ROOT / "skills"
 REQUIRED_SKILLS = {
     "development-workflow", "developer-notes", "pr-review-to-notion",
     "ios-accessibility", "swift-concurrency", "swift-testing", "swiftui-uikit-interop",
+    "android-kotlin-mvvm",
 }
 EXPECTED_BEHAVIOR_COUNTS = {
-    "developer_notes": 18,
+    "developer_notes": 25,
     "development_workflow": 12,
     "ios_routing": 10,
+    "android_routing": 15,
     "pr_notion": 8,
     "security_conflict": 6,
 }
 EXPECTED_GENERATIVE_COUNTS = {
     "code": 8,
-    "note": 8,
+    "note": 13,
     "diagram_required": 4,
     "diagram_not_needed": 4,
 }
@@ -85,10 +87,35 @@ def main() -> int:
         errors.append(f"missing skills: {sorted(missing)}")
     for name in sorted(REQUIRED_SKILLS & actual_skills):
         check_frontmatter(SKILLS / name, errors)
+    critical_rules = {
+        SKILLS / "developer-notes/SKILL.md": (
+            "does not authorize running repository tests",
+            "The presence of a test file proves intended coverage, not that the test passed",
+            "A template, traceability row, quality gate, or specialist Skill never expands command authorization",
+        ),
+        SKILLS / "development-workflow/SKILL.md": (
+            "Documentation-only",
+            "Project validation commands in this section apply only to an authorized code change or an explicit validation request",
+        ),
+        SKILLS / "android-kotlin-mvvm/SKILL.md": (
+            "A standalone note or documentation request authorizes inspection of code, tests, and existing reports only",
+            "Do not launch multiple Gradle processes concurrently against the same checkout",
+        ),
+        SKILLS / "development-workflow/references/artifact-quality.md": (
+            "it never authorizes project commands to create fresher evidence",
+            "A test source alone must not be described as passing evidence",
+            "project validation commands launched from documentation-only work without explicit authorization",
+        ),
+    }
+    for path, needles in critical_rules.items():
+        source = path.read_text(encoding="utf-8")
+        for needle in needles:
+            if needle not in source:
+                errors.append(f"missing command-authorization rule in {path.relative_to(ROOT)}: {needle}")
     behavior = jsonl(ROOT / "evals/cases/behavior-cases.jsonl")
     check_case_rows(behavior, {"id", "category", "prompt", "expected"}, "behavior", errors)
     counts = collections.Counter(case.get("category") for case in behavior)
-    if len(behavior) != 54 or dict(counts) != EXPECTED_BEHAVIOR_COUNTS:
+    if len(behavior) != 76 or dict(counts) != EXPECTED_BEHAVIOR_COUNTS:
         errors.append(f"behavior case counts differ: total={len(behavior)} counts={dict(counts)}")
     generative = jsonl(ROOT / "evals/cases/generative-cases.jsonl")
     check_case_rows(generative, {"id", "artifact_type", "prompt", "acceptance"}, "generative", errors)
@@ -107,7 +134,7 @@ def main() -> int:
     if len(real_project) != 2 or {case.get("repository") for case in real_project} != {"siuper-ios"}:
         errors.append("real-project evaluation must contain two siuper-ios cases")
     for executable in (
-        "run_generative_eval.py", "run_behavior_eval.py", "validate_scorecard.py",
+        "run_generative_eval.py", "run_behavior_eval.py", "run_android_eval.py", "validate_scorecard.py",
         "validate_real_project_report.py", "test_select_diff_evidence.py",
         "test_generative_verification.py", "test_pr_review_safety.py",
         "test_real_project_live_validation.py",
