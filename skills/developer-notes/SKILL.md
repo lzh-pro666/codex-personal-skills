@@ -1,6 +1,6 @@
 ---
 name: developer-notes
-description: Use when the user asks to search, 整理、沉淀、记录、保存、查找或更新 reusable development knowledge in Obsidian, especially a 需求架构设计, Bug 修复, or 简单需求处理 note for iOS and software-engineering work.
+description: Use when the user asks to search, 整理、沉淀、记录、保存、查找或更新 reusable software-engineering or technical-learning knowledge in Obsidian, including 学习笔记、需求架构设计、Bug 修复和简单需求处理. Do not use for standalone Word/PDF deliverables or single-PR retrospectives.
 ---
 
 # 开发笔记
@@ -10,12 +10,12 @@ Turn completed or planned development work into concise, reusable Obsidian notes
 ## Fast path
 
 1. Classify the request as search-only or write. A request to delete, merge, move, or "only keep" a result is a destructive write, never search-only.
-2. For a write, choose exactly one note type using the rules below.
+2. For a write, choose exactly one of the four note types below.
 3. Extract 3–6 high-signal terms and search before writing.
 4. Read only the 3–5 best candidates.
 5. Update the canonical note when the same work already exists; otherwise create one note.
 6. Read exactly one matching template before writing.
-7. Draft the smallest useful note, then read `../development-workflow/references/artifact-quality.md` and run the note quality gate.
+7. Draft the smallest useful note, then read `../development-workflow/references/artifact-quality.md` and run its lightweight or full note gate as routed below.
 8. Only after a passing gate, state the target path and create/update action, write, then read back and verify.
 
 For search-only requests, return ranked results and stop.
@@ -26,9 +26,10 @@ Honor an explicit user classification. Otherwise apply these rules in order:
 
 1. **Bug 修复 (`bug-fix`)**: Use for crash, error, regression, incorrect behavior, performance defect, compatibility problem, failed test, incident, investigation, root cause, or corrective fix.
 2. **需求架构设计 (`architecture-design`)**: Use for a new or changed requirement that needs cross-module design, component responsibilities, API or data-model changes, data flow, technical selection, migration, compatibility strategy, or explicit trade-offs.
-3. **简单需求处理 (`simple-change`)**: Use for a contained, low-risk change such as local UI behavior, copy, configuration, parameter, validation, small refactor, or limited business logic that needs no architectural decision.
+3. **学习笔记 (`learning-note`)**: Use when the primary outcome is understanding or verifying an existing concept, API, framework, paper, book, course, experiment, or reusable technique rather than recording a project change. Distinguish source-bounded notes, cross-source concept notes, and practice evidence in the template.
+4. **简单需求处理 (`simple-change`)**: Use for a contained, low-risk project change such as local UI behavior, copy, configuration, parameter, validation, small refactor, or limited business logic that needs no architectural decision.
 
-A Bug remains `bug-fix` even when its fix has architectural impact; record that impact in the Bug note. When neither Bug nor architecture signals are present, default to `simple-change`. Ask only when the classification would materially change the result.
+A Bug remains `bug-fix` even when its fix has architectural impact; record that impact in the Bug note. When no Bug or architecture signal exists, use `simple-change` for concrete project work and `learning-note` when no project change is being recorded. Ask only when the classification would materially change the result.
 
 ## Load one template
 
@@ -36,6 +37,7 @@ Before creating or substantially restructuring a note, read only the selected re
 
 - `architecture-design` → `references/architecture-design.md`
 - `bug-fix` → `references/bug-fix.md`
+- `learning-note` → `references/learning-note.md`
 - `simple-change` → `references/simple-change.md`
 
 Do not load the other templates. Omit optional sections that add no evidence or reusable value.
@@ -48,6 +50,7 @@ Do not load the other templates. Omit optional sections that add no evidence or 
 - Return at most five results by default: path, match reason, and one-line summary.
 - When the user explicitly asks for every match, paginate paths/properties and short match reasons in bounded batches. Do not load every note body; read a body only when needed to disambiguate or answer a follow-up.
 - Update when the candidate covers the same requirement or defect in the same context. Create when the goal, root cause, design decision, or reusable conclusion differs materially.
+- For learning notes, search the concept, source title, edition/version, and common aliases. Update the same source note when source, version, and learning question match; update a concept note when the reusable conclusion matches. Do not merge a source note, concept note, and practice note merely because they share a topic.
 
 ## Choose the path
 
@@ -55,6 +58,7 @@ Honor the user's path and the vault's existing taxonomy first. Otherwise prefer:
 
 - Architecture: `iOS/Architecture/` or `Projects/<project>/`
 - Bug: `iOS/Debugging/` or `Projects/<project>/`
+- Learning: the closest existing `Learning/`, technology, or domain folder
 - Simple change: the closest existing technology or project folder
 - Unknown destination: `00-Inbox/`
 
@@ -64,8 +68,8 @@ Do not invent a large folder hierarchy for one note.
 
 - Match the user's language, including headings.
 - Use properties at the top and set `note_type` to the selected type.
-- Set `status` from current evidence, not from a template default. Never claim `fixed`, `accepted`, or `completed` before verification.
-- Use only these lifecycles: architecture `proposed → accepted → implemented → superseded`; Bug `investigating → fixed → monitoring`; simple change `planned → in-progress → completed`.
+- Set `status` from current evidence, not from a template default. Never claim `fixed`, `accepted`, `implemented`, `completed`, or `verified` before supporting evidence exists.
+- Use only these lifecycles: architecture `proposed → accepted → implemented → superseded`; Bug `investigating → fixed → monitoring`; learning `captured → understood → practiced/verified`, `practiced → verified`, with any stale conclusion moving to `outdated`; simple change `planned → in-progress → completed`.
 - Omit unknown optional properties such as `aliases`, `project`, and `severity`; never write placeholder values such as `<可选>`.
 - Preserve exact requirements, APIs, errors, code, logs, versions, constraints, decisions, and verification evidence when useful.
 - Separate confirmed facts from hypotheses.
@@ -73,16 +77,43 @@ Do not invent a large folder hierarchy for one note.
 - Keep tags stable and minimal.
 - Never write secrets, credentials, personal data, or unrelated confidential content.
 - Remove generic introductions, process narration, repeated conclusions, and empty headings.
-- Add `source_refs` only when concrete source files, PRs, issues, OpenSpec changes, or external references are known. Treat code, tests, PRs, and accepted specifications as facts; the note is a knowledge layer.
+- Add `source_refs` only when concrete source files, PRs, issues, accepted specifications, or external references are known.
+
+## Respect facts and authority
+
+- Treat accepted specifications, repository documentation, code, tests, PRs, and observed verification as facts; the Obsidian note is a derived knowledge layer and must not silently override them.
+- When authoritative sources conflict with the draft or an existing note, report the conflict, preserve both exact references, and do not promote the note to `accepted`, `implemented`, `fixed`, `completed`, or `verified` until it is resolved.
+- For version-sensitive learning, prefer primary sources and record the applicable version or verification date when known. If the current behavior cannot be checked, mark the boundary as unverified instead of guessing.
+- Paraphrase source material and preserve only short excerpts needed for exact API, error, or specification wording. Keep source notes distinct from cross-source concept synthesis unless the user explicitly asks to merge them.
+
+## Bound evidence acquisition
+
+A standalone request to search, create, or update a note authorizes the requested Obsidian operation and read-only inspection of in-scope sources. It does not authorize running repository tests, builds, linters, generators, package installation, `adb`, emulators, simulators, or other project commands merely to refresh evidence.
+
+- Read source code, test code, accepted specifications, existing reports, logs, CI results, and verification already observed in the current conversation.
+- Record exactly what that evidence proves. The presence of a test file proves intended coverage, not that the test passed.
+- When no observed result exists, write `待验证` or the matching unverified boundary. Do not run a command to replace an honest gap or improve a quality score.
+- If the user explicitly asks in the current request to verify the implementation or run tests, complete that separately under `$development-workflow`, then reuse its result in the note. If an already-authorized implementation workflow produced fresh evidence, reuse it without rerunning.
+- A template, traceability row, quality gate, or specialist Skill never expands command authorization.
+
+## Trace project work
+
+For project-scoped architecture and simple-change notes, add a compact traceability table when concrete project references exist. Map each material requirement or acceptance item through its design decision, implementation location, and test or verification evidence:
+
+| 需求 / 验收项 | 设计 | 实现 | 测试 / 验证 |
+| --- | --- | --- | --- |
+
+Use exact IDs, headings, files, symbols, tests, existing reports, or already-observed commands. A planned document may say `未实现` or `待验证`; never invent a downstream reference or execute a project command to fill the table. Omit the table for non-project learning notes and when no concrete relationship can be established.
 
 ## Pass the note quality gate
 
 Before any write, evaluate the draft with the canonical rule in `../development-workflow/references/artifact-quality.md`.
 
-- Require at least 85/100, the dimension minimums, and no blockers.
-- Attach evidence to the evaluation using headings, source references, verification text, examples, and diagram names.
-- Add a diagram only when the rule's complexity trigger applies. For a simple note with no trigger, record a concise omission reason during evaluation; do not put process narration into the final note.
-- Revise material gaps and re-evaluate, with at most two revisions. If the third evaluation does not pass, do not write; report the unresolved gaps.
+- Use the lightweight gate only for a `learning-note` that remains `captured`, or a contained `simple-change` with no material risk, diagram trigger, project traceability, or authoritative-source conflict.
+- Use the full 100-point gate for architecture, Bug, learning notes promoted beyond `captured`, project-scoped traceability, material risk, a diagram trigger, a substantial restructure, or any unresolved source conflict. Require at least 85/100, the dimension minimums, and no blockers.
+- Attach evidence to the selected evaluation using headings, source references, verification text, examples, diagram names, or the lightweight checklist. Add a diagram only when the rule's complexity trigger applies.
+- Evaluate the available evidence; do not acquire new execution evidence during the gate. An honest `待验证` may satisfy completeness and traceability but cannot support a terminal status.
+- For the full gate, revise material gaps and re-evaluate, with at most two revisions. If the third evaluation does not pass, do not write; report the unresolved gaps.
 - After writing and reading back, confirm the stored note still satisfies the passing draft and contains no duplicate or secret. A write, patch, search, or read result with `isError` fails verification.
 
 ## Update safely
