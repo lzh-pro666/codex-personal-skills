@@ -1,6 +1,6 @@
 ---
 name: development-workflow
-description: Use when a software request involves requirements or architecture design, diagnosis without a fix, code review, implementation, bug fixing, refactoring, or tests, especially for iOS work that may involve OpenSpec, Swift concurrency, testing, interoperability, accessibility, or knowledge capture.
+description: Use when a software request involves requirements or architecture design, diagnosis without a fix, code review, implementation, bug fixing, refactoring, or tests. Apply the shared delivery and quality workflow across platforms, then route iOS and Android implementation details to the matching specialist skill.
 ---
 
 # Development Workflow
@@ -14,6 +14,7 @@ Choose the requested outcome before mutation:
 - **Design-only**: deliver requirements, alternatives, trade-offs, and acceptance; write only a requested design artifact.
 - **Diagnose-only**: reproduce or inspect, confirm or bound the cause, and report without fixing.
 - **Review-only**: report actionable findings without editing, posting comments, or changing external state.
+- **Documentation-only**: create or update the requested documentation or knowledge artifact from existing sources and observed evidence. This mode does not authorize project tests, builds, linters, generators, installation, `adb`, emulators, or simulators unless the user explicitly requests implementation verification or a command run.
 - **Code change**: implementation is explicitly requested. Classify it as **complex/architecture**, **bug fix**, or **simple change**.
 
 Read-only wording such as “inspect,” “explain,” “diagnose,” “review,” or “do not modify” is a hard mutation boundary. Do not edit tracked/configuration files, create branches, stage, commit, push, publish notes, or implement a fix. If proof requires mutation, report the limitation and request authority.
@@ -33,7 +34,11 @@ Independently mark work **high-risk** when it is security-sensitive, destructive
 Enter this section only for **Code change** mode.
 
 1. Read repository instructions, inspect the affected path, and check worktree status. Never store credentials. Treat existing modifications as user-owned; use an isolated worktree when requested or when overlap, duration, concurrency, or risk materially warrants it. Never reset or overwrite user work.
-2. Load only matching specialist Skills:
+2. Keep this workflow platform-neutral and load only matching specialist Skills:
+   - siuper-sdk-android architecture, module boundaries, StateFlow/ViewModel, lifecycle, Compose/View, or Gradle tests: `$android-kotlin-mvvm`
+   - Compose system bars, insets, or IME overlap in siuper-sdk-android: `$android-kotlin-mvvm` plus `$edge-to-edge`
+   - Android component, Intent, PendingIntent, or exported-surface security in siuper-sdk-android: `$android-kotlin-mvvm` plus `$android-intent-security`
+   - R8 or Proguard rule analysis in siuper-sdk-android: `$android-kotlin-mvvm` plus `$r8-analyzer`
    - actor isolation, tasks, cancellation, races: `$swift-concurrency`
    - Swift tests or framework migration: `$swift-testing`
    - SwiftUI/UIKit boundaries: `$swiftui-uikit-interop`
@@ -41,11 +46,12 @@ Enter this section only for **Code change** mode.
 3. Search narrowly, inspect the affected call chain, bound logs and diffs, and load only references needed for the current decision. Preserve accepted constraints and evidence across compaction; re-read the authoritative source when exact wording matters.
 4. State a brief outcome-oriented implementation outline for non-mechanical work. Create a durable plan only when requested, required by repository policy, or needed for high-risk or resumable coordination. A plan never grants implementation authority.
 5. Keep the patch minimal and compatible. Defend untrusted boundaries and observed failures, but do not add speculative guards for impossible states or hide programmer errors behind silent fallbacks. Extract helpers only for meaningful reuse, non-obvious rules, side effects, real branching, or test seams; avoid pass-through wrappers and needless single-use helpers.
-6. Add or update focused tests when changed business logic, state transitions, parsing, concurrency, or a confirmed regression has a stable test boundary. Test order is an implementation choice; do not require a failing test before editing. For documentation, configuration-only work, generated code, prototypes, pure layout, or impractical unit-test boundaries, use targeted builds and concrete manual acceptance instead.
+6. Add or update focused tests when changed business logic, state transitions, parsing, concurrency, or a confirmed regression has a stable test boundary. Test order is an implementation choice; do not require a failing test before editing. For documentation-only work, validate the artifact itself and preserve project verification as an explicit gap. For configuration-only work, generated code, prototypes, pure layout, or impractical unit-test boundaries, use targeted static checks and concrete manual acceptance instead.
 
 ## Verify, evaluate, and finish
 
-- Do not run project build commands such as `xcodebuild build`, `swift build`, or `make build-*` unless the user explicitly requests a build in the current task. Use focused tests, static or type checks, inspection, and manual acceptance where available. If a build is the only remaining proof, report it as unverified and provide the suggested command without executing it.
+- Project validation commands in this section apply only to an authorized code change or an explicit validation request. Documentation-only work stops after source inspection and artifact verification; record missing runtime evidence rather than producing it.
+- Do not run project build commands such as `xcodebuild build`, `swift build`, Gradle `build`/`assemble`, or `make build-*` unless the user explicitly requests a build in the current task. Use focused tests, static or type checks, inspection, and manual acceptance where available. If a build is the only remaining proof, report it as unverified and provide the suggested command without executing it.
 - Run the narrowest allowed checks before broader repository-required checks. Reuse fresh evidence while inputs are unchanged; later mutation invalidates only affected evidence. Never claim an unobserved pass.
 - Before declaring completion, map each material claim to observed test, static check, inspection, or manual evidence. High-risk or disputed claims require stronger and independently relevant evidence; routine command count alone proves nothing.
 - After a code change, read `references/artifact-quality.md` and produce its evidence-backed scorecard. Include context-control evidence: relevant sources loaded, bounded searches, retained constraints, and excluded irrelevant output. Do not score nonexistent generated code for design-, diagnose-, or review-only work.

@@ -1,6 +1,6 @@
 # Artifact Quality Gate
 
-Use this rule after implementation verification and before delivering generated code or writing a developer note. Evaluate the artifact itself, not the effort or process narration. A score without concrete evidence is invalid.
+Use this rule after implementation verification and before delivering generated code or writing a developer note. Evaluate the artifact itself, not the effort or process narration. A score without concrete evidence is invalid. For developer notes, this gate evaluates evidence already available to the note task; it never authorizes project commands to create fresher evidence.
 
 ## Scorecard contract
 
@@ -56,22 +56,39 @@ During maintainability analysis, distinguish necessary boundary protection from 
 
 ## Developer note — 100 points
 
+### Lightweight note gate
+
+Use this gate only when `$developer-notes` routes a captured learning note or a contained simple change with no material risk, diagram trigger, project traceability, authoritative-source conflict, or substantial restructuring. This gate has no numerical score. Pass only when every item has observed evidence:
+
+- The note type, title, tags, and non-terminal status match the actual content.
+- Concrete facts and conclusions are supported by a known source or explicitly marked unverified; facts and inference are distinct.
+- Required content for the selected note type is present without empty headings, fabricated references, or placeholder values.
+- Targeted search found no duplicate canonical note, and the selected create/update action is justified.
+- The draft contains no secret, credential, personal datum, unrelated confidential content, or unsupported completion claim.
+
+Any failed item means `revise`; address material gaps with at most two revisions. If the third evaluation still fails, do not write and report the unresolved gaps. After a pre-write pass, read the stored note back and verify it still matches the draft. Route to the full gate below when the note is architecture or Bug work, a learning note is promoted beyond `captured`, project traceability is required, a material risk or diagram trigger exists, authoritative sources conflict, or the write substantially restructures a canonical note.
+
+### Full note gate
+
 | Dimension ID | Criterion | Max | Minimum |
 | --- | --- | ---: | ---: |
 | `understandability` | A future reader can understand context, mechanism, and conclusion | 25 | 20 |
 | `completeness` | Required evidence for the selected note type is present | 25 | 20 |
-| `correctness_evidence` | Facts, hypotheses, sources, status, and verification are accurate | 20 | 16 |
-| `searchability_traceability` | Specific title, stable tags, links, project/source references | 10 | 0 |
+| `correctness_evidence` | Facts, hypotheses, sources, status, observed verification, and explicit unverified gaps are accurate | 20 | 16 |
+| `searchability_traceability` | Specific title, stable tags, links, source references, and project trace relationships when applicable | 10 | 0 |
 | `structure_concision` | Scannable organization without repetition or empty sections | 10 | 0 |
 | `diagrams_examples` | Appropriate diagrams/examples add information rather than decoration | 10 | 0 |
 
 A note passes at 85 or above; a note evaluation suite passes at an average of 90 or above. Judge completeness by note type:
 
-- Architecture: context, goal/non-goals, constraints, alternatives/trade-offs, decision, components/data flow, failure paths, migration where applicable, risks, verification, status, and sources.
+- Architecture: context, goal/non-goals, constraints, alternatives/trade-offs, decision, components/data flow, failure paths, migration where applicable, risks, verification plan or observed result, status, sources, and requirement → design → implementation → test traceability when concrete project references exist.
 - Bug: symptom/impact, reproduction, expected/actual result, root cause and evidence, fix, meaningful code/config changes, regression coverage, residual risk, status, and sources.
-- Simple change: goal, scope/non-goals where needed, implemented change, verification, material risk, status, and sources.
+- Learning: a specific learning question, source-bounded or synthesized conclusion, mechanism, applicability/version boundary, facts versus inference, useful example or practice evidence when relevant, verification status, and sources. A `practice` note must include reproducible conditions and observed results; a `source` note must preserve its source boundary.
+- Simple change: goal, scope/non-goals where needed, implemented change, verification, material risk, status, sources, and requirement → design → implementation → test traceability when concrete project references exist.
 
-Do not create empty sections to simulate completeness. Note blockers include secrets, unsupported conclusions, a status contradicted by evidence, a duplicate canonical note, and a required diagram or equivalent explanation being absent.
+Judge evidence honesty and sufficiency, not freshness. An existing test report, an already-observed command result, or a truthful `待验证` entry can satisfy note completeness and traceability according to the note's status. A test source alone must not be described as passing evidence, and `待验证` cannot support `implemented`, `fixed`, `completed`, or `verified`. Do not run project tools to improve a note score.
+
+Do not create empty sections to simulate completeness. Note blockers include secrets, unsupported conclusions, a status contradicted by evidence, a duplicate canonical note, an unresolved conflict with an authoritative source, a required project trace relationship that is missing or inconsistent, and a required diagram or equivalent explanation being absent. A truthful unverified entry is not a blocker by itself.
 
 ## Diagram and example analysis
 
@@ -85,7 +102,7 @@ Reward information gain, not diagram count:
 
 A diagram must render, use labels consistent with the code/text, have a short introduction and interpretation, include material dependencies and failure branches, and agree with the written conclusion. Penalize decorative diagrams, duplicated prose, invented edges, and unverifiable detail.
 
-Simple changes and simple bugs do not require a diagram by default. When none of the triggers applies, record a concise omission reason and award the diagram dimension based on suitable examples or the justified omission. When a trigger applies, require the relevant diagram or an equally clear textual representation.
+Captured learning notes, simple changes, and simple bugs do not require a diagram by default. When none of the triggers applies, record a concise omission reason and award the diagram dimension based on suitable examples or the justified omission. When a trigger applies, require the relevant diagram or an equally clear textual representation.
 
 ## Workflow — 100 points
 
@@ -99,7 +116,7 @@ Simple changes and simple bugs do not require a diagram by default. When none of
 | `context_efficiency` | Complete relevant context with bounded loading, durable constraints, and low noise | 10 | 8 |
 | `handoff_capture` | Clear delivery, remaining risks, and optional note handoff | 10 | 0 |
 
-Workflow passes at 85 or above and has no blocker. Block on implementation before required alignment/approval, ignored repository instructions, destructive or external writes outside authorization, fabricated verification, or automatic note publication without consent.
+Workflow passes at 85 or above and has no blocker. Block on implementation before required alignment/approval, ignored repository instructions, destructive or external writes outside authorization, fabricated verification, project validation commands launched from documentation-only work without explicit authorization, or automatic note publication without consent.
 Also block on credential material being written or staged, pre-existing user changes being overwritten, broad test cleanup, or a production Notion mutation during an evaluation.
 
 For `context_efficiency`, require evidence rather than token-count claims. Reward targeted searches, complete inspection of the affected call chain, progressive loading of only relevant Skill references, bounded log/diff/review selectors, source pointers for summaries, and retention of accepted constraints across a long task. Deduct for full-repository or full-vault dumps when a targeted query exists, loading unrelated references, repeating large raw outputs, losing a critical constraint during summarization, or producing a verbose handoff that hides the decision. Do not reward an incomplete investigation merely because it is short.
