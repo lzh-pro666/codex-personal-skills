@@ -1,13 +1,18 @@
 # Codex Personal Skills
 
-面向 Codex 的个人开发工作流、iOS 专项能力与知识沉淀 Skill 源码仓库。
+面向 Codex 的个人开发工作流、iOS 专项能力、Siuper Android 项目约定与知识沉淀 Skill 源码仓库。
 
 ## Skills
 
 - `development-workflow`：对齐需求，路由专项 Skill，完成实现、验证、质量门禁和笔记询问。
-- `developer-notes`：通过 Obsidian MCP 查重并安全沉淀架构、Bug、简单需求三类笔记。
+- `android-kotlin-mvvm`：约束 `siuper-sdk-android` 的模块边界、Manager/API、StateFlow、协程生命周期、Compose/View 混合栈与聚焦测试。
+- `developer-notes`：通过 Obsidian MCP 查重并安全沉淀学习、架构、Bug 和简单需求笔记，项目内容按需追踪需求、设计、实现与测试。
 - `pr-review-to-notion`：生成证据优先的单 PR 中文复盘，按需写入本地配置的 Notion 数据源。
 - `ios-accessibility`、`swift-concurrency`、`swift-testing`、`swiftui-uikit-interop`：iOS 专项实现与审查规则。
+
+`development-workflow` 保持跨平台共用：需求确认、诊断、权限边界、实现节奏、验证和质量门禁不按 Android/iOS 复制。平台差异由专项 Skill 承担；Android 侧使用项目级 `android-kotlin-mvvm`，iOS 侧按问题路由到现有四个专项 Skill。
+
+Android 侧只安装与当前项目直接相关的 Google 官方专项 Skill：`edge-to-edge`、`android-intent-security`、`r8-analyzer`。它们位于用户级 Skill 目录，不在本仓库 vendoring，也不替代项目约定。当前 Kotlin 官方仓库主要提供 AGP 9 迁移、后端、跨平台迁移等专项能力，因此不整包安装；测试和日常 Kotlin/Gradle 决策由项目级 `android-kotlin-mvvm` 基于仓库证据处理。Android 工作流不依赖额外 MCP。
 
 ## 本地安装
 
@@ -31,7 +36,9 @@ $development-workflow 实现这个需求并完成质量验收。
 $developer-notes 把刚才验证完成的工作整理成开发笔记。
 ```
 
-`development-workflow` 是 Codex 的个人策略与路由层，不复制 Superpowers 本体。需求确实存在重大歧义时才调用 `$brainstorming`；精确任务和已批准规格直接执行。不要为启停 Skill 中断任务或重启 Codex，也不要并装两套同名 Superpowers Skill。代码、测试、PR 和已接受的 OpenSpec 是事实来源，Obsidian 是可复用知识层，Notion 是单 PR 复盘层。
+`development-workflow` 内置轻量需求确认：修改前先说明目标、范围、验收条件和关键假设；已经清楚时直接继续，只在答案会改变行为、架构或权限时询问。测试用于验证可测行为和回归风险，不强制先写失败测试再改代码。代码、测试、PR 和已接受的 OpenSpec 是事实来源，Obsidian 是可复用知识层，Notion 是单 PR 复盘层。
+
+独立的笔记或文档任务只读取现有源码、测试、报告和日志；不为了补齐笔记证据自动运行项目测试或构建。没有执行结果时记录“待验证”；只有用户当前请求明确要求验证实现或运行测试时，才执行对应项目命令。
 
 ## 维护
 
@@ -56,7 +63,8 @@ python3 evals/scripts/run_static_checks.py
 ```
 
 需要高强度回归时，再使用 `run_behavior_eval.py`、`run_generative_eval.py` 和
-`validate_real_project_report.py`。涉及项目代码时，在独立分支或 worktree 中执行
-项目自身的测试和构建，并只把可复用案例定义留在本仓库。
+`validate_real_project_report.py`。Android Skill 或安装配置变化先运行
+`run_android_eval.py`。涉及项目代码时，在独立分支或 worktree 中执行
+项目自身的聚焦测试和静态检查；仅在用户明确要求时运行构建。只把可复用案例定义留在本仓库。
 
 不要在仓库中保存 API Key、Token、证书、私钥、`.env` 或 `~/.codex/config.toml`。

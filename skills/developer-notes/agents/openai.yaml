@@ -1,7 +1,7 @@
 interface:
   display_name: "开发笔记"
-  short_description: "分类、查重并安全整理 Obsidian 开发笔记工作流"
-  default_prompt: "Use $developer-notes to search or classify this work, and create or update an Obsidian note only when the user requests a write."
+  short_description: "分类、查重并安全整理 Obsidian 学习与开发笔记"
+  default_prompt: "Use $developer-notes to search or classify this learning or development knowledge, and create or update an Obsidian note only when I request a write."
 
 dependencies:
   tools:

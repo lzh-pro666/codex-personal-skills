@@ -1,0 +1,4 @@
+interface:
+  display_name: "Android Kotlin MVVM"
+  short_description: "遵循 Siuper Android 架构、生命周期与测试约定"
+  default_prompt: "Use $android-kotlin-mvvm to implement this siuper-sdk-android change within its existing module, state, lifecycle, UI, and test conventions."
