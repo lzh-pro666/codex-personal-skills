@@ -14,7 +14,7 @@ Accessibility patterns for audio and video content using AVFoundation.
 
 AVFoundation uses media characteristics to identify accessibility tracks:
 
-Docs: [AVMediaCharacteristic](https://sosumi.ai/documentation/avfoundation/avmediacharacteristic)
+Docs: [AVMediaCharacteristic](https://developer.apple.com/documentation/avfoundation/avmediacharacteristic)
 
 | Characteristic | Purpose |
 | -------------- | ------- |

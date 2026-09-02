@@ -12,7 +12,7 @@ Patterns for bridging callback-based, delegate-based, and GCD code into Swift Co
 
 Use `withCheckedContinuation` (non-throwing) or `withCheckedThrowingContinuation` (throwing) to bridge completion-handler APIs into async/await. Available iOS 13+.
 
-Docs: [withCheckedContinuation](https://sosumi.ai/documentation/swift/withcheckedcontinuation(isolation:function:_:)) · [withCheckedThrowingContinuation](https://sosumi.ai/documentation/swift/withcheckedthrowingcontinuation(isolation:function:_:))
+Docs: [withCheckedContinuation](<https://developer.apple.com/documentation/swift/withcheckedcontinuation(isolation:function:_:)>), [withCheckedThrowingContinuation](<https://developer.apple.com/documentation/swift/withcheckedthrowingcontinuation(isolation:function:_:)>).
 
 ### Basic Pattern
 
