@@ -21,6 +21,15 @@ Read-only wording such as “inspect,” “explain,” “diagnose,” “revie
 
 Independently mark work **high-risk** when it is security-sensitive, destructive, production-data or migration work, a public-contract change, cross-system coordination, or consequential external state.
 
+## Known Projects and Cross-Project Isolation
+
+- Android project: `/Users/admin/project/siuper-sdk-android`
+- iOS project: `/Users/admin/Desktop/project/siuper-ios`
+
+These paths are location hints, not permission or a reason to load both repositories. Keep the current project as the default evidence boundary. Do not inspect the counterpart project for ordinary single-platform work, initial orientation, or generic convention lookup.
+
+Read `references/project-locations.md` only when the user explicitly requests cross-platform comparison/reuse, or when a concrete shared-contract ambiguity cannot be resolved from the current project and counterpart evidence is materially necessary. Announce the reason before crossing the project boundary, keep access read-only and narrowly targeted, and stop once the specific evidence gap is resolved. A counterpart lookup never authorizes its builds, tests, dependency resolution, branch changes, or file edits.
+
 ## Confirm requirements
 
 - Before editing, state the understood goal, scope, non-goals, observable acceptance, and any material assumption. When these are already clear, this concise restatement is sufficient confirmation and work may continue without another question.
@@ -45,7 +54,7 @@ Enter this section only for **Code change** mode.
    - assistive technologies and accessible UI: `$ios-accessibility`
 3. Search narrowly, inspect the affected call chain, bound logs and diffs, and load only references needed for the current decision. Preserve accepted constraints and evidence across compaction; re-read the authoritative source when exact wording matters.
 4. State a brief outcome-oriented implementation outline for non-mechanical work. Create a durable plan only when requested, required by repository policy, or needed for high-risk or resumable coordination. A plan never grants implementation authority.
-5. Keep the patch minimal and compatible. Defend untrusted boundaries and observed failures, but do not add speculative guards for impossible states or hide programmer errors behind silent fallbacks. Extract helpers only for meaningful reuse, non-obvious rules, side effects, real branching, or test seams; avoid pass-through wrappers and needless single-use helpers.
+5. After the accepted behavior, root cause or design responsibility, owning boundary, and verification needs are understood, choose the smallest coherent change that fully satisfies them. “Minimal” means no unrelated scope or unnecessary mechanism, not the fewest changed lines or files. Include necessary contract, model, migration, error-handling, and focused-test changes instead of leaving the result incomplete to keep the diff small. Preserve compatibility unless the accepted requirement explicitly changes it. Defend untrusted boundaries and observed failures, but do not add speculative guards for impossible states or hide programmer errors behind silent fallbacks. Extract helpers only for meaningful reuse, non-obvious rules, side effects, real branching, or test seams; avoid pass-through wrappers and needless single-use helpers.
 6. Add or update focused tests when changed business logic, state transitions, parsing, concurrency, or a confirmed regression has a stable test boundary. Test order is an implementation choice; do not require a failing test before editing. For documentation-only work, validate the artifact itself and preserve project verification as an explicit gap. For configuration-only work, generated code, prototypes, pure layout, or impractical unit-test boundaries, use targeted static checks and concrete manual acceptance instead.
 
 ## Verify, evaluate, and finish

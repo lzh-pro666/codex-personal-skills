@@ -86,6 +86,8 @@ def main() -> int:
         "version discipline": "pinned third-party",
         "note command boundary": "A standalone note or documentation request authorizes inspection",
         "same-checkout Gradle safety": "Do not launch multiple Gradle processes concurrently",
+        "project location": "/Users/admin/project/siuper-sdk-android",
+        "counterpart isolation": "do not inspect it for ordinary Android work",
     }
     missing_conventions = [label for label, needle in required_conventions.items() if needle not in skill_text]
     record(
