@@ -7,6 +7,8 @@ description: Design, implement, review, or explicitly validate Android/Kotlin ch
 
 Keep Android changes consistent with the architecture already present in `siuper-sdk-android`. This is a project-convention skill, not a generic Android manual and not authority to migrate frameworks or redesign unrelated modules.
 
+The default local root is `/Users/admin/project/siuper-sdk-android`. The iOS counterpart is available at `/Users/admin/Desktop/project/siuper-ios`, but do not inspect it for ordinary Android work. When an explicit cross-platform request or unresolved shared-contract question makes counterpart evidence necessary, first read `../development-workflow/references/project-locations.md` and follow its read-only, bounded-access rules.
+
 ## Authority and Routing
 
 1. Treat the user's request, repository `AGENTS.md`, Gradle configuration, nearby production code, and tests as the authority for project behavior and compatibility.

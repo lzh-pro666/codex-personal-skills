@@ -20,7 +20,7 @@ REQUIRED_SKILLS = {
 }
 EXPECTED_BEHAVIOR_COUNTS = {
     "developer_notes": 25,
-    "development_workflow": 12,
+    "development_workflow": 15,
     "ios_routing": 10,
     "android_routing": 15,
     "pr_notion": 8,
@@ -96,6 +96,10 @@ def main() -> int:
         SKILLS / "development-workflow/SKILL.md": (
             "Documentation-only",
             "Project validation commands in this section apply only to an authorized code change or an explicit validation request",
+            "/Users/admin/project/siuper-sdk-android",
+            "/Users/admin/Desktop/project/siuper-ios",
+            "These paths are location hints, not permission or a reason to load both repositories",
+            "Minimal\u201d means no unrelated scope or unnecessary mechanism, not the fewest changed lines or files",
         ),
         SKILLS / "android-kotlin-mvvm/SKILL.md": (
             "A standalone note or documentation request authorizes inspection of code, tests, and existing reports only",
@@ -105,6 +109,12 @@ def main() -> int:
             "it never authorizes project commands to create fresher evidence",
             "A test source alone must not be described as passing evidence",
             "project validation commands launched from documentation-only work without explicit authorization",
+            "Do not reward a smaller diff when it omits work required by the accepted behavior or root cause",
+        ),
+        SKILLS / "development-workflow/references/project-locations.md": (
+            "Do not open the counterpart repository merely because it is available",
+            "read-only evidence source",
+            "Do not run builds, tests, dependency resolution, generators, indexers, or broad Git-history searches",
         ),
     }
     for path, needles in critical_rules.items():
@@ -115,7 +125,7 @@ def main() -> int:
     behavior = jsonl(ROOT / "evals/cases/behavior-cases.jsonl")
     check_case_rows(behavior, {"id", "category", "prompt", "expected"}, "behavior", errors)
     counts = collections.Counter(case.get("category") for case in behavior)
-    if len(behavior) != 76 or dict(counts) != EXPECTED_BEHAVIOR_COUNTS:
+    if len(behavior) != 79 or dict(counts) != EXPECTED_BEHAVIOR_COUNTS:
         errors.append(f"behavior case counts differ: total={len(behavior)} counts={dict(counts)}")
     generative = jsonl(ROOT / "evals/cases/generative-cases.jsonl")
     check_case_rows(generative, {"id", "artifact_type", "prompt", "acceptance"}, "generative", errors)

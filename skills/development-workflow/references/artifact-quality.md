@@ -40,7 +40,7 @@ Keep the same `run_id` and `case_id` across revisions and increment `attempt` fr
 | `tests_verification` | Regression proof, test quality, builds, and honest gaps | 20 | 16 |
 | `robustness_security` | Errors, boundaries, cancellation, concurrency, privacy, and security | 15 | 0 |
 | `readability_naming` | Intent-revealing structure, naming, and useful comments | 10 | 0 |
-| `scope_control` | Smallest coherent change without unrelated churn, speculative guards, or trivial wrappers | 5 | 0 |
+| `scope_control` | Smallest coherent change that fully satisfies accepted behavior, owning boundaries, compatibility, and verification without unrelated churn, speculative guards, or trivial wrappers | 5 | 0 |
 
 An individual artifact passes at 85 or above; an evaluation suite passes at an average of 90 or above. Code blockers include:
 
@@ -53,6 +53,8 @@ An individual artifact passes at 85 or above; an evaluation suite passes at an a
 - A secret, credential, personal datum, or unrelated confidential content.
 
 During maintainability analysis, distinguish necessary boundary protection from defensive ceremony. Reward validation at real trust boundaries and explicit handling of observed failures. Deduct for guards against type-impossible states, silent fallbacks that conceal invariant violations, duplicated checks with no new boundary, and helpers that only forward one call or rename one expression. Do not penalize a short helper when it names a domain rule, centralizes repeated behavior, isolates a side effect, or creates a meaningful test seam.
+
+Do not reward a smaller diff when it omits work required by the accepted behavior or root cause. File and line count are not quality targets. Necessary public-contract updates, data/model changes, migrations, error handling, compatibility work, and focused regression tests remain in scope when the requirement needs them; judge whether each change is necessary and coherent.
 
 ## Developer note — 100 points
 
