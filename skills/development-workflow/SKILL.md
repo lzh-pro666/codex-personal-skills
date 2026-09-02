@@ -1,68 +1,48 @@
 ---
 name: development-workflow
-description: Use when a software request involves requirements or architecture design, diagnosis without a fix, code review, implementation, bug fixing, refactoring, or tests. Apply the shared delivery and quality workflow across platforms, then route iOS and Android implementation details to the matching specialist skill.
+description: Use for software requirements or architecture design, diagnosis, code review, implementation, bug fixing, refactoring, or tests. Apply a shared delivery workflow, then load only the relevant platform specialist skill.
 ---
 
 # Development Workflow
 
-Deliver verified outcomes with the smallest justified process. Repository code, tests, accepted specifications, and observed verification are facts; notes are a reusable knowledge layer.
+Deliver the requested software outcome with proportionate alignment, implementation, and verification. Repository instructions, accepted specifications, code, tests, and observed results are authoritative; notes are derived knowledge.
 
-## Route and authority
+## Choose the outcome
 
-Choose the requested outcome before mutation:
+- **Design**: define requirements, alternatives, trade-offs, failure behavior, migration, and acceptance without implementing.
+- **Diagnose**: establish or bound the cause and report evidence without fixing.
+- **Review**: report actionable findings without editing or posting externally.
+- **Documentation**: create the requested artifact from existing sources. Do not run project commands merely to make the document look verified.
+- **Code change**: implement the requested behavior; classify it as architecture/complex, bug fix, or simple change.
 
-- **Design-only**: deliver requirements, alternatives, trade-offs, and acceptance; write only a requested design artifact.
-- **Diagnose-only**: reproduce or inspect, confirm or bound the cause, and report without fixing.
-- **Review-only**: report actionable findings without editing, posting comments, or changing external state.
-- **Documentation-only**: create or update the requested documentation or knowledge artifact from existing sources and observed evidence. This mode does not authorize project tests, builds, linters, generators, installation, `adb`, emulators, or simulators unless the user explicitly requests implementation verification or a command run.
-- **Code change**: implementation is explicitly requested. Classify it as **complex/architecture**, **bug fix**, or **simple change**.
+Treat security-sensitive, destructive, migration, public-contract, production-data, and cross-system work as high risk regardless of change size. Read-only wording is a mutation boundary.
 
-Read-only wording such as “inspect,” “explain,” “diagnose,” “review,” or “do not modify” is a hard mutation boundary. Do not edit tracked/configuration files, create branches, stage, commit, push, publish notes, or implement a fix. If proof requires mutation, report the limitation and request authority.
+## Align before editing
 
-Independently mark work **high-risk** when it is security-sensitive, destructive, production-data or migration work, a public-contract change, cross-system coordination, or consequential external state.
+- State the goal, scope, non-goals, observable acceptance, and material assumptions. Ask only when an unresolved answer would change behavior, architecture, compatibility, scope, or authority.
+- For a material design choice, recommend an approach and expose its key trade-off before committing to it. Follow accepted OpenSpec or other repository-required specifications.
+- For a bug, capture the shortest reproduction, expected/actual behavior, supporting evidence, and a falsifiable root-cause hypothesis.
+- For a simple change, keep alignment brief and avoid design ceremony.
 
-## Known Projects and Cross-Project Isolation
+## Implement
 
-- Android project: `/Users/admin/project/siuper-sdk-android`
-- iOS project: `/Users/admin/Desktop/project/siuper-ios`
-
-These paths are location hints, not permission or a reason to load both repositories. Keep the current project as the default evidence boundary. Do not inspect the counterpart project for ordinary single-platform work, initial orientation, or generic convention lookup.
-
-Read `references/project-locations.md` only when the user explicitly requests cross-platform comparison/reuse, or when a concrete shared-contract ambiguity cannot be resolved from the current project and counterpart evidence is materially necessary. Announce the reason before crossing the project boundary, keep access read-only and narrowly targeted, and stop once the specific evidence gap is resolved. A counterpart lookup never authorizes its builds, tests, dependency resolution, branch changes, or file edits.
-
-## Confirm requirements
-
-- Before editing, state the understood goal, scope, non-goals, observable acceptance, and any material assumption. When these are already clear, this concise restatement is sufficient confirmation and work may continue without another question.
-- Ask one focused question only when its answer changes behavior, scope, architecture, compatibility, or authority. Resolve material ambiguity before implementation; do not turn confirmation into a question loop.
-- For a complex design choice, recommend one approach with its key trade-off and obtain confirmation before committing to that architecture. Record relevant constraints, failure behavior, migration, and acceptance. When required, accepted OpenSpec is authoritative; link its `change-id` and stop on a conflict before implementation.
-- For a bug, capture the shortest reproduction, expected/actual behavior, evidence, and a falsifiable root-cause hypothesis. Confirm the expected behavior when repository evidence and the request disagree.
-- For a simple change, state intended behavior, affected surface, non-goals, and minimum verification. Do not create ceremony without decision value.
-
-## Implement scoped changes
-
-Enter this section only for **Code change** mode.
-
-1. Read repository instructions, inspect the affected path, and check worktree status. Never store credentials. Treat existing modifications as user-owned; use an isolated worktree when requested or when overlap, duration, concurrency, or risk materially warrants it. Never reset or overwrite user work.
-2. Keep this workflow platform-neutral and load only matching specialist Skills:
-   - siuper-sdk-android architecture, module boundaries, StateFlow/ViewModel, lifecycle, Compose/View, or Gradle tests: `$android-kotlin-mvvm`
-   - Compose system bars, insets, or IME overlap in siuper-sdk-android: `$android-kotlin-mvvm` plus `$edge-to-edge`
-   - Android component, Intent, PendingIntent, or exported-surface security in siuper-sdk-android: `$android-kotlin-mvvm` plus `$android-intent-security`
-   - R8 or Proguard rule analysis in siuper-sdk-android: `$android-kotlin-mvvm` plus `$r8-analyzer`
-   - actor isolation, tasks, cancellation, races: `$swift-concurrency`
-   - Swift tests or framework migration: `$swift-testing`
+1. Read repository instructions and inspect the affected call chain and worktree state.
+2. Load only the specialist skills needed by the changed surface:
+   - Siuper Android architecture, StateFlow/ViewModel, lifecycle, Compose/View, or Gradle tests: `$android-kotlin-mvvm`
+   - Android insets/IME, Intent security, or R8: add `$edge-to-edge`, `$android-intent-security`, or `$r8-analyzer` respectively
+   - Swift concurrency: `$swift-concurrency`
+   - Swift tests: `$swift-testing`
    - SwiftUI/UIKit boundaries: `$swiftui-uikit-interop`
-   - assistive technologies and accessible UI: `$ios-accessibility`
-3. Search narrowly, inspect the affected call chain, bound logs and diffs, and load only references needed for the current decision. Preserve accepted constraints and evidence across compaction; re-read the authoritative source when exact wording matters.
-4. State a brief outcome-oriented implementation outline for non-mechanical work. Create a durable plan only when requested, required by repository policy, or needed for high-risk or resumable coordination. A plan never grants implementation authority.
-5. After the accepted behavior, root cause or design responsibility, owning boundary, and verification needs are understood, choose the smallest coherent change that fully satisfies them. “Minimal” means no unrelated scope or unnecessary mechanism, not the fewest changed lines or files. Include necessary contract, model, migration, error-handling, and focused-test changes instead of leaving the result incomplete to keep the diff small. Preserve compatibility unless the accepted requirement explicitly changes it. Defend untrusted boundaries and observed failures, but do not add speculative guards for impossible states or hide programmer errors behind silent fallbacks. Extract helpers only for meaningful reuse, non-obvious rules, side effects, real branching, or test seams; avoid pass-through wrappers and needless single-use helpers.
-6. Add or update focused tests when changed business logic, state transitions, parsing, concurrency, or a confirmed regression has a stable test boundary. Test order is an implementation choice; do not require a failing test before editing. For documentation-only work, validate the artifact itself and preserve project verification as an explicit gap. For configuration-only work, generated code, prototypes, pure layout, or impractical unit-test boundaries, use targeted static checks and concrete manual acceptance instead.
+   - iOS accessibility: `$ios-accessibility`
+3. Make the smallest coherent change that fully satisfies the accepted behavior. Preserve compatibility unless the requirement changes it; include necessary contract, model, migration, error-handling, and focused-test work. Avoid unrelated refactors, speculative guards, silent fallbacks, and wrappers without a real rule, side effect, branch, reuse, or test seam.
+4. Add focused tests for stable, testable behavior or regressions. For configuration, generated output, prototypes, pure layout, or impractical unit boundaries, use targeted static checks and concrete manual acceptance instead.
 
-## Verify, evaluate, and finish
+For configured Siuper project roots and cross-project isolation, read `references/project-locations.md` only when cross-platform evidence is explicitly requested or a named shared-contract ambiguity cannot be resolved locally.
 
-- Project validation commands in this section apply only to an authorized code change or an explicit validation request. Documentation-only work stops after source inspection and artifact verification; record missing runtime evidence rather than producing it.
-- Do not run project build commands such as `xcodebuild build`, `swift build`, Gradle `build`/`assemble`, or `make build-*` unless the user explicitly requests a build in the current task. Use focused tests, static or type checks, inspection, and manual acceptance where available. If a build is the only remaining proof, report it as unverified and provide the suggested command without executing it.
-- Run the narrowest allowed checks before broader repository-required checks. Reuse fresh evidence while inputs are unchanged; later mutation invalidates only affected evidence. Never claim an unobserved pass.
-- Before declaring completion, map each material claim to observed test, static check, inspection, or manual evidence. High-risk or disputed claims require stronger and independently relevant evidence; routine command count alone proves nothing.
-- After a code change, read `references/artifact-quality.md` and produce its evidence-backed scorecard. Include context-control evidence: relevant sources loaded, bounded searches, retained constraints, and excluded irrelevant output. Do not score nonexistent generated code for design-, diagnose-, or review-only work.
-- On `revise`, address material gaps and re-evaluate, with at most two revisions. After a third non-pass, report blockers and preserve the last safe state; do not claim completion.
-- Report outcome, verification, quality decision, risks, and unverified boundaries. After a passing implementation, ask whether to create an Obsidian development note; never write one automatically. When requested, use `$developer-notes` with verified facts. Use `$pr-review-to-notion` for a single-PR retrospective rather than duplicating it in Obsidian.
+## Verify and evaluate
+
+- Run the narrowest authorized checks that faithfully cover the changed behavior, followed by repository-required checks. Do not run a project build unless the user explicitly requests it or repository instructions require it for the changed surface.
+- Map every material completion claim to observed test, static, inspection, or manual evidence; report unverified boundaries precisely.
+- Read `references/artifact-quality.md` after a code change. Use its lightweight gate for contained low-risk work and its full 100-point scorecard for formal evaluations, high-risk work, or material architecture, migration, public-contract, data-integrity, security, or concurrency changes. Emit machine-readable JSON only when requested or required by an evaluation.
+- A full-gate `revise` result allows at most two artifact revisions. After a third non-pass, report blockers and do not claim completion.
+- Report the outcome, verification, risks, and quality decision. Create a development note only when requested; use `$pr-review-to-notion` for a single-PR retrospective.

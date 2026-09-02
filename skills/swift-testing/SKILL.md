@@ -1,40 +1,29 @@
 ---
 name: swift-testing
-description: Write, migrate, or review Swift unit tests using Swift Testing or XCTest. Use for @Test, @Suite, #expect, #require, async tests, parameterization, test isolation, XCTest migration, or choosing framework boundaries; do not trigger for production-code changes that do not involve tests.
+description: Write, migrate, or review Swift unit tests using Swift Testing or XCTest. Use for @Test, @Suite, expectations, async tests, parameterization, isolation, XCTest migration, or framework-boundary decisions; not production-only changes.
 ---
 
 # Swift Testing
 
-Write behavior-focused, deterministic tests that match the affected target's existing framework and toolchain. Do not migrate XCTest merely to modernize syntax.
+Write deterministic, behavior-focused tests that match the target's existing framework and toolchain. Do not migrate XCTest solely to modernize syntax.
 
-## Workflow
+## Decisions
 
-1. Identify the behavior, failure mode, and target under test.
-2. Inspect nearby tests, imports, test-plan settings, Swift version, and available SDK before choosing APIs.
-3. Use Swift Testing for new unit tests when the target already supports it; preserve XCTest/XCUITest for UI automation, performance tests, existing snapshot tooling, Objective-C exception cases, or incremental migrations.
-4. Isolate fixtures and external state. Swift Testing runs tests in parallel by default; use serialization only for truly shared resources, never to encode test order.
-5. Run the narrowest repository test command and report any unverified boundary.
+- Identify the observable behavior, failure mode, target, nearby conventions, test-plan settings, Swift version, and SDK.
+- Prefer Swift Testing for new unit tests when the target supports it. Keep XCTest/XCUITest where UI automation, performance, snapshots, Objective-C exceptions, or incremental migration require it.
+- Use `#require` when later assertions depend on a value; use `#expect` for independent expectations.
+- Prefer parameterization for repeated inputs and confirmations, injected clocks, virtual time, or completion signals over sleeps.
+- Isolate fixtures and external state. Parallel execution must not share mutable globals or depend on declaration order; serialize only truly exclusive resources.
+- Test errors, cancellation, empty input, and boundaries when they belong to the contract. Use protocol-based doubles when the production boundary already supports injection.
 
-## Core Rules
+## References
 
-- Assert observable behavior, not private implementation details.
-- Use `#require` when later checks depend on an unwrapped or validated value; use `#expect` for independent expectations.
-- Replace unconditional `XCTFail` with `Issue.record` only when the target supports the intended Swift Testing API.
-- Prefer parameterized cases for repeated inputs and `confirmation` or injected clocks over sleeps for async behavior.
-- Cover error, cancellation, empty, and boundary paths when they are part of the changed contract.
-- Do not share mutable globals across parallel tests. Keep mocks protocol-based when the production boundary already supports injection.
-- Gate exit testing, capture lists, attachment APIs, cancellation APIs, and cross-framework interoperability by the actual compiler/runtime rather than remembered availability.
+- Suites, parameterization, confirmations, tags, or scoping: `references/testing-core.md`
+- XCTest migration, test doubles, or testable boundaries: `references/testing-migration-doubles.md`
+- Async/concurrent tests, XCUITest, performance, or snapshots: `references/testing-async-ui.md`
+- File organization, availability, argument descriptions, or review: `references/testing-organization.md`
+- Warnings, cancellation APIs, exit tests, attachments, or version gates: `references/testing-advanced.md`
 
-## Load References Only When Needed
+Use `references/testing-patterns.md` only as a router for a mixed testing request.
 
-- Parameterized suites, tags, complex confirmation semantics, mocking design, or XCTest migration: `references/testing-patterns.md`
-- Exit tests, warnings, cancellation, attachments, and version-gated APIs: `references/testing-advanced.md`
-
-Do not load a reference for a normal behavior test, a controlled async fake, or a straightforward `#expect`/`#require` conversion when the skill and nearby tests already provide enough guidance.
-
-## Completion Check
-
-- The test fails for the intended regression and passes for the corrected behavior where practical.
-- It is deterministic under parallel execution and does not rely on declaration order or arbitrary delays.
-- Framework/API choices match the target and repository conventions.
-- The focused test command passes, or the exact verification gap is reported.
+Run the narrowest authorized repository test command. Report whether the intended regression was demonstrated, whether corrected behavior passed, and any toolchain or runtime gap.

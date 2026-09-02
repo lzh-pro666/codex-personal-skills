@@ -62,6 +62,11 @@ worktree 不进入 Git；它们可以删除并由评估脚本重新生成。
 python3 evals/scripts/run_static_checks.py
 ```
 
+质量标准保留原有的 85 分单项通过、90 分评估套件平均、关键维度最低分、blocker
+和最多三次评估。低风险的小改动走轻量清单；正式评估以及架构、迁移、公共契约、
+数据完整性、安全或并发等实质风险使用完整 100 分标准。普通交付不要求输出 JSON
+评分卡，只有用户请求或评估运行时才生成机器可读结果。
+
 需要高强度回归时，再使用 `run_behavior_eval.py`、`run_generative_eval.py` 和
 `validate_real_project_report.py`。Android Skill 或安装配置变化先运行
 `run_android_eval.py`。涉及项目代码时，在独立分支或 worktree 中执行

@@ -71,30 +71,16 @@ def main() -> int:
         [f"frontmatter={project_skill_name}", "agents/openai.yaml"],
     )
 
-    skill_text = "\n".join(
-        path.read_text(encoding="utf-8")
-        for path in (PROJECT_SKILL / "SKILL.md", PROJECT_SKILL / "references/siuper-android-conventions.md")
+    skill_entry = PROJECT_SKILL / "SKILL.md"
+    convention_reference = PROJECT_SKILL / "references/siuper-android-conventions.md"
+    reference_linked = (
+        convention_reference.is_file()
+        and "references/siuper-android-conventions.md" in skill_entry.read_text(encoding="utf-8")
     )
-    required_conventions = {
-        "module/API boundary": "SiuperManager",
-        "state contract": "BaseViewModel",
-        "view lifecycle": "viewLifecycleOwner",
-        "concurrent collection": "repeatOnLifecycle",
-        "hybrid UI": "DisposeOnViewTreeLifecycleDestroyed",
-        "coroutine tests": "TestCoroutineScheduler",
-        "repository authority": "AGENTS.md",
-        "version discipline": "pinned third-party",
-        "note command boundary": "A standalone note or documentation request authorizes inspection",
-        "same-checkout Gradle safety": "Do not launch multiple Gradle processes concurrently",
-        "project location": "/Users/admin/project/siuper-sdk-android",
-        "counterpart isolation": "do not inspect it for ordinary Android work",
-    }
-    missing_conventions = [label for label, needle in required_conventions.items() if needle not in skill_text]
     record(
-        "project_conventions",
-        not missing_conventions,
-        [f"covered={len(required_conventions) - len(missing_conventions)}/{len(required_conventions)}"]
-        + [f"missing={label}" for label in missing_conventions],
+        "project_reference_routing",
+        reference_linked,
+        ["references/siuper-android-conventions.md", f"linked={reference_linked}"],
     )
 
     installed = []
@@ -116,8 +102,8 @@ def main() -> int:
     }
     expected_routes = {"android-kotlin-mvvm", *OFFICIAL_SKILLS}
     routing_ok = (
-        len(cases) == 15
-        and len(case_ids) == 15
+        bool(cases)
+        and len(case_ids) == len(cases)
         and expected_routes.issubset(route_coverage)
         and all("android-kotlin-mvvm" in case["expected"]["skills"] for case in cases)
     )

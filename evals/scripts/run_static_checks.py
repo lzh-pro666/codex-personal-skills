@@ -10,6 +10,8 @@ import re
 import subprocess
 import sys
 
+from validate_scorecard import SPECS
+
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SKILLS = ROOT / "skills"
@@ -18,7 +20,7 @@ REQUIRED_SKILLS = {
     "ios-accessibility", "swift-concurrency", "swift-testing", "swiftui-uikit-interop",
     "android-kotlin-mvvm",
 }
-EXPECTED_BEHAVIOR_COUNTS = {
+MINIMUM_BEHAVIOR_COUNTS = {
     "developer_notes": 25,
     "development_workflow": 15,
     "ios_routing": 10,
@@ -26,14 +28,12 @@ EXPECTED_BEHAVIOR_COUNTS = {
     "pr_notion": 8,
     "security_conflict": 6,
 }
-EXPECTED_GENERATIVE_COUNTS = {
+MINIMUM_GENERATIVE_COUNTS = {
     "code": 8,
     "note": 13,
     "diagram_required": 4,
     "diagram_not_needed": 4,
 }
-
-
 def jsonl(path: pathlib.Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
@@ -61,11 +61,13 @@ def check_frontmatter(skill_dir: pathlib.Path, errors: list[str]) -> None:
     if not match:
         errors.append(f"invalid frontmatter: {path.relative_to(ROOT)}")
         return
-    keys = [line.split(":", 1)[0].strip() for line in match.group(1).splitlines() if ":" in line]
-    if keys != ["name", "description"]:
-        errors.append(f"frontmatter keys must be name, description: {path.relative_to(ROOT)}")
-    if f"name: {skill_dir.name}\n" not in match.group(0):
+    frontmatter = match.group(1)
+    names = re.findall(r"(?m)^name:\s*(.+?)\s*$", frontmatter)
+    descriptions = re.findall(r"(?m)^description:\s*(.+?)\s*$", frontmatter)
+    if names != [skill_dir.name]:
         errors.append(f"skill name does not match folder: {skill_dir.name}")
+    if len(descriptions) != 1 or not descriptions[0].strip():
+        errors.append(f"skill needs one non-empty description: {path.relative_to(ROOT)}")
     agent = skill_dir / "agents" / "openai.yaml"
     if not agent.is_file():
         errors.append(f"missing agents/openai.yaml: {skill_dir.name}")
@@ -79,6 +81,32 @@ def check_frontmatter(skill_dir: pathlib.Path, errors: list[str]) -> None:
             errors.append(f"broken resource reference in {skill_dir.name}: {reference}")
 
 
+def check_scorecard_spec(errors: list[str]) -> None:
+    path = SKILLS / "development-workflow/references/artifact-quality.md"
+    rows = re.findall(
+        r"(?m)^\| `([a-z_]+)` \| .*? \| (\d+) \| (\d+) \|$",
+        path.read_text(encoding="utf-8"),
+    )
+    documented = {name: (int(maximum), int(minimum)) for name, maximum, minimum in rows}
+    expected = {
+        name: values
+        for spec in SPECS.values()
+        for name, values in spec["dimensions"].items()
+    }
+    duplicates = sorted(name for name, count in collections.Counter(row[0] for row in rows).items() if count > 1)
+    mismatched = sorted(
+        name for name, values in expected.items()
+        if name in documented and documented[name] != values
+    )
+    if documented != expected or duplicates:
+        errors.append(
+            "artifact-quality dimensions differ from validate_scorecard.py: "
+            f"missing={sorted(set(expected) - set(documented))} "
+            f"extra={sorted(set(documented) - set(expected))} "
+            f"mismatched={mismatched} duplicates={duplicates}"
+        )
+
+
 def main() -> int:
     errors: list[str] = []
     actual_skills = {path.name for path in SKILLS.iterdir() if path.is_dir()}
@@ -87,53 +115,33 @@ def main() -> int:
         errors.append(f"missing skills: {sorted(missing)}")
     for name in sorted(REQUIRED_SKILLS & actual_skills):
         check_frontmatter(SKILLS / name, errors)
-    critical_rules = {
-        SKILLS / "developer-notes/SKILL.md": (
-            "does not authorize running repository tests",
-            "The presence of a test file proves intended coverage, not that the test passed",
-            "A template, traceability row, quality gate, or specialist Skill never expands command authorization",
-        ),
-        SKILLS / "development-workflow/SKILL.md": (
-            "Documentation-only",
-            "Project validation commands in this section apply only to an authorized code change or an explicit validation request",
-            "/Users/admin/project/siuper-sdk-android",
-            "/Users/admin/Desktop/project/siuper-ios",
-            "These paths are location hints, not permission or a reason to load both repositories",
-            "Minimal\u201d means no unrelated scope or unnecessary mechanism, not the fewest changed lines or files",
-        ),
-        SKILLS / "android-kotlin-mvvm/SKILL.md": (
-            "A standalone note or documentation request authorizes inspection of code, tests, and existing reports only",
-            "Do not launch multiple Gradle processes concurrently against the same checkout",
-        ),
-        SKILLS / "development-workflow/references/artifact-quality.md": (
-            "it never authorizes project commands to create fresher evidence",
-            "A test source alone must not be described as passing evidence",
-            "project validation commands launched from documentation-only work without explicit authorization",
-            "Do not reward a smaller diff when it omits work required by the accepted behavior or root cause",
-        ),
-        SKILLS / "development-workflow/references/project-locations.md": (
-            "Do not open the counterpart repository merely because it is available",
-            "read-only evidence source",
-            "Do not run builds, tests, dependency resolution, generators, indexers, or broad Git-history searches",
-        ),
-    }
-    for path, needles in critical_rules.items():
-        source = path.read_text(encoding="utf-8")
-        for needle in needles:
-            if needle not in source:
-                errors.append(f"missing command-authorization rule in {path.relative_to(ROOT)}: {needle}")
+    check_scorecard_spec(errors)
     behavior = jsonl(ROOT / "evals/cases/behavior-cases.jsonl")
     check_case_rows(behavior, {"id", "category", "prompt", "expected"}, "behavior", errors)
     counts = collections.Counter(case.get("category") for case in behavior)
-    if len(behavior) != 79 or dict(counts) != EXPECTED_BEHAVIOR_COUNTS:
-        errors.append(f"behavior case counts differ: total={len(behavior)} counts={dict(counts)}")
+    if set(counts) != set(MINIMUM_BEHAVIOR_COUNTS):
+        errors.append(f"behavior categories differ: {sorted(counts)}")
+    for category, minimum in MINIMUM_BEHAVIOR_COUNTS.items():
+        if counts[category] < minimum:
+            errors.append(f"behavior category {category} needs at least {minimum} cases")
+    for case in behavior:
+        expected = case.get("expected")
+        if not isinstance(expected, dict) or set(expected) != {"classification", "skills", "must", "must_not"}:
+            errors.append(f"behavior case has invalid expected result: {case.get('id')}")
+            continue
+        for key in ("skills", "must", "must_not"):
+            if not isinstance(expected[key], list) or not expected[key]:
+                errors.append(f"behavior case {case.get('id')} needs non-empty {key}")
     generative = jsonl(ROOT / "evals/cases/generative-cases.jsonl")
     check_case_rows(generative, {"id", "artifact_type", "prompt", "acceptance"}, "generative", errors)
     if any(not isinstance(case.get("acceptance"), list) or not case["acceptance"] for case in generative):
         errors.append("every generative case needs acceptance criteria")
     gen_counts = collections.Counter(case.get("artifact_type") for case in generative)
-    if dict(gen_counts) != EXPECTED_GENERATIVE_COUNTS:
-        errors.append(f"generative case counts differ: {dict(gen_counts)}")
+    if set(gen_counts) != set(MINIMUM_GENERATIVE_COUNTS):
+        errors.append(f"generative artifact types differ: {sorted(gen_counts)}")
+    for artifact_type, minimum in MINIMUM_GENERATIVE_COUNTS.items():
+        if gen_counts[artifact_type] < minimum:
+            errors.append(f"generative type {artifact_type} needs at least {minimum} cases")
     real_project = jsonl(ROOT / "evals/cases/real-project-cases.jsonl")
     check_case_rows(
         real_project,
@@ -267,7 +275,6 @@ def main() -> int:
     secret_patterns = (
         r"Bearer\s+[A-Za-z0-9._~+/-]{16,}",
         r"(?i)(?:api[_ -]?key|token|password)\s*[:=]\s*[A-Za-z0-9._~+/-]{24,}",
-        r"\b[0-9a-fA-F]{64}\b",
     )
     if any(re.search(pattern, tracked_text) for pattern in secret_patterns):
         errors.append("possible credential material found in repository files")

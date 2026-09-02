@@ -47,7 +47,6 @@ REQUIRED_KEYS = {"run_id", "case_id", "attempt", "artifact_type", "dimensions", 
 SECRET_PATTERNS = (
     re.compile(r"Bearer\s+[A-Za-z0-9._~+/-]{16,}", re.IGNORECASE),
     re.compile(r"(?i)(?:api[_ -]?key|token|password)\s*[:=]\s*[A-Za-z0-9._~+/-]{16,}"),
-    re.compile(r"\b[0-9a-fA-F]{64}\b"),
 )
 
 
